@@ -1,29 +1,28 @@
 ---
-- name: Perform Safe Upgrade
-  apt: upgrade=safe update_cache=yes
+  - name: create volumes fact
+    set_fact:
+      vol:
+        device_name: '/dev/{{ item.attach_point }}'
+        volume_type: 'gp2'
+        volume_size: "{{ item.volume_size }}"
+        delete_on_termination: 'true'
+    with_items: "{{vols}}"
+    register: volumes
 
-- name: Install Server Basics
-  apt: pkg={{ item }} state=installed update_cache=true
-  with_items:
-    - acl
-    - unattended-upgrades
-    - policykit-1
-    - ntp
-    - wget
-    - curl
-    - vim
-    - ack-grep
-    - git
-    - unzip
-    - htop
-    - tmux
-  notify:
-    - Start NTP
-
-- name: Add Periodic Configuration
-  copy: src=10periodic dest=/etc/apt/apt.conf.d/10periodic owner=root group=root
-
-- name: Add Unattended Upgrade Configuration
-  copy: src=50unattended-upgrades dest=/etc/apt/apt.conf.d/50unattended-upgrades owner=root group=root
-  notify:
-   - Restart Unattended Upgrades
+  - name: Provision EC2 Box
+    local_action:
+      module: ec2
+      profile: "{{ aws_profile }}"
+      region: "{{ region }}"
+      key_name: "{{ ec2_keypair }}"
+      group: "{{ aws_security_group }}"
+      instance_type: "{{ ec2_instance_type }}"
+      image: "{{ ec2_image }}"
+      vpc_subnet_id: "{{ ec2_subnet_ids}}"
+      instance_tags: '{"Name":"{{ec2_tag_Name}}","Type":"{{ec2_tag_Type}}","Environment":"{{ec2_tag_Environment}}"}'
+      assign_public_ip: "{{ public_ip}}"
+      count: "{{ number_of_instances }}"
+      termination_protection: "{{ termination_protection }}"
+      wait: true
+      volumes: "{{ volumes.results | map(attribute='ansible_facts.vol') | list }}"
+    register: ec2

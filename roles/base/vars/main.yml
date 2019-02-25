@@ -1,0 +1,19 @@
+---
+  aws_profile: "hackathon"
+  region: "ca-central-1"
+  ec2_keypair: "saltminion@adfs01"
+  aws_security_group: ["sg-0be8a9e24362680c8" ]
+  ec2_instance_type: "t2.medium"
+  ec2_image: ""
+  ec2_subnet_ids: "subnet-6d618304"
+  public_ip: "yes"
+  termination_protection: "no"
+  ec2_tag_Name: "yul07"
+  ec2_tag_Type: ""
+  ec2_tag_Environment: "hackathon"
+  number_of_instances: 1
+  vols:
+    - attach_point: 'sda1'
+      volume_size: '10'
+    - attach_point: 'sdb'
+      volume_size: '8'
