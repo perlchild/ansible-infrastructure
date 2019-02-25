@@ -4,7 +4,7 @@
   ec2_keypair: "saltminion@adfs01"
   aws_security_group: ["sg-0be8a9e24362680c8" ]
   ec2_instance_type: "t2.medium"
-  ec2_image: ""
+  ec2_image: "ami-033e6106180a626d0"
   ec2_subnet_ids: "subnet-6d618304"
   public_ip: "yes"
   termination_protection: "no"
